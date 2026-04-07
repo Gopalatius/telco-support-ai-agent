@@ -20,6 +20,8 @@ This design aims to balance safety, operational simplicity, and realistic produc
 - explicit human escalation with transcript and context handoff
 - measurable release gates before launch and trace-based monitoring after launch
 
+The core design choice is to treat the system as an orchestration problem, not just a model-call problem. In other words, the production value does not come only from "calling an LLM," but from how session state, retrieval, telephony, evaluation, and escalation are coordinated around that model. That is especially important for a telco support assistant, where billing mistakes, bad handoffs, and poor latency all create real customer risk.
+
 Main components:
 
 - Channel adapters: web/mobile chat requests and SIP/telephony calls.
@@ -29,6 +31,28 @@ Main components:
 - Knowledge pipeline: document storage, chunking, embeddings, Qdrant indexing, and versioned alias promotion.
 - Persistent data: Postgres for transcripts, audit events, escalation metadata, and evaluation datasets.
 - Observability: Langfuse traces, OpenTelemetry spans, and infrastructure metrics.
+
+## Main Components and Responsibilities
+
+### Channel Adapters
+
+The channel adapters normalize input from different surfaces into one shared conversation contract. For chat, that means accepting web or mobile messages, validating the request, and forwarding the session plus the latest user turn to the orchestrator. For voice, the adapter is more complex: it manages the media session, receives audio frames, handles streaming STT and TTS, and decides when partial speech has become a committed user turn.
+
+### Orchestrator API
+
+The orchestrator is the application brain of the system. It loads the current session memory, decides when retrieval is needed, builds the prompt, calls the model, evaluates whether the answer is safe enough to return, and records the result for observability and audit. This is also the layer that standardizes escalation behavior across chat and voice so the same support policy is enforced in both channels.
+
+### Knowledge Pipeline
+
+The knowledge pipeline is intentionally separated from the serving path. Its job is to ingest new documents, chunk and embed them, write them into a versioned Qdrant collection, run validation checks, and promote a new alias only when retrieval quality is acceptable. This separation keeps knowledge updates operationally safe because a bad index can be rolled back without redeploying or interrupting the serving stack.
+
+### Session Memory and Durable Data
+
+Redis stores short-lived conversation context that needs to be read and updated on every turn with very low latency. Postgres stores durable business records such as transcripts, escalation reasons, and evaluation artifacts. This split keeps the serving tier fast while still giving operations, analytics, and human-support teams a reliable historical record.
+
+### Human Escalation and Agent Desktop
+
+The escalation path is treated as part of the product, not as an afterthought. When the AI cannot answer confidently, the live-agent system should receive enough structured context to continue the conversation immediately: the transcript, the retrieved evidence, the model reply, the escalation reason, and customer identifiers. That reduces repeated questioning and makes the AI feel like a useful front-line assistant rather than a dead-end bot.
 
 ## How Voice Differs from Chat
 
@@ -114,6 +138,8 @@ I would avoid sticky sessions unless a telephony provider requires them at the e
 
 ## Before Launch: Evaluation Strategy
 
+Before launch, I would evaluate the system the way I would evaluate a high-risk support feature: with a small but carefully labeled dataset, clear quality thresholds, and explicit failure gates. Because this assistant answers billing and plan questions, I care more about groundedness and safe escalation than stylistic fluency.
+
 ### Test Dataset
 
 I would build a labeled evaluation set with roughly 60 to 80 examples from the provided domains:
@@ -157,6 +183,8 @@ I would use a hybrid evaluation approach:
 - p95 chat latency below 2.5 seconds
 
 ## In Production: Monitoring and Observability
+
+Once the assistant is live, I would monitor both traditional service health and AI-specific behavior. Uptime alone is not enough for this kind of system; a voice or chat agent can be fully available while still being operationally bad because it is hallucinating, retrieving the wrong chunks, or escalating too often.
 
 ### Metrics
 

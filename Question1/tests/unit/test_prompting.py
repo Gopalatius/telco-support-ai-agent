@@ -64,7 +64,7 @@ def test_build_user_prompt_includes_message_and_context() -> None:
     assert "Customer message:" in prompt
     assert "What is the late fee?" in prompt
     assert "Knowledge base context:" in prompt
-    assert "Determine whether the context is sufficient" in prompt
+    assert "Use the knowledge base context as the factual basis" in prompt
 
 
 def test_build_retrieval_query_prompt_handles_empty_and_populated_history() -> None:
