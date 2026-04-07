@@ -21,7 +21,7 @@ If you want the shortest useful review path:
 2. Open [Question2/architecture.png](Question2/architecture.png) for the production-system overview.
 3. Read [Question2/design.md](Question2/design.md) for the detailed system design, evaluation, and observability plan.
 
-## Why This Submission Stands Out
+## Key Engineering Decisions
 
 - App-controlled RAG with a history-aware retrieval-query rewrite step for multi-turn conversations.
 - Dense retrieval kept as the default, with hybrid retrieval and reranking implemented and benchmarked as enterprise-oriented extensions.
