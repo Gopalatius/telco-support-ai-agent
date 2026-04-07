@@ -1,6 +1,8 @@
-# AI Engineer Technical Assignment
+# Telco Support AI Agent
 
-Submission for an AI Engineer technical assignment focused on a telco customer-support agent.
+AI Engineer technical assignment submission for a telco customer-support agent covering both implementation and production design.
+
+Question 1 is a runnable FastAPI-based customer-service agent with RAG, evaluation artifacts, Docker support, and verified checks. Question 2 contains the production architecture, evaluation strategy, observability plan, and failure-mode analysis for scaling the same agent across chat and voice.
 
 ## What Is Included
 
@@ -11,6 +13,22 @@ Submission for an AI Engineer technical assignment focused on a telco customer-s
 | Architecture diagram | [Question2/architecture.png](Question2/architecture.png) | Also included as Mermaid source and SVG export |
 | Design and evaluation document | [Question2/design.md](Question2/design.md) | Production architecture, evaluation, observability, and failure modes |
 
+## Fast Review
+
+If you want the shortest useful review path:
+
+1. Read [Question1/README.md](Question1/README.md) for the implementation and engineering decisions.
+2. Open [Question2/architecture.png](Question2/architecture.png) for the production-system overview.
+3. Read [Question2/design.md](Question2/design.md) for the detailed system design, evaluation, and observability plan.
+
+## Why This Submission Stands Out
+
+- App-controlled RAG with a history-aware retrieval-query rewrite step for multi-turn conversations.
+- Dense retrieval kept as the default, with hybrid retrieval and reranking implemented and benchmarked as enterprise-oriented extensions.
+- Real benchmark artifacts for both retrieval quality and end-to-end chat behavior, including escalation-required and multi-turn cases.
+- Verified local and Docker workflows rather than README-only instructions.
+- Strong engineering hygiene with typed config, adapter isolation, and high application-code test coverage.
+
 ## Assignment Checklist
 
 | Assignment need | Where it is covered |
@@ -20,14 +38,6 @@ Submission for an AI Engineer technical assignment focused on a telco customer-s
 | Prompt, chunking, embedding, and limitation explanation | [Question1/README.md](Question1/README.md) |
 | Architecture diagram | [Question2/architecture.png](Question2/architecture.png) |
 | Production design, evaluation, observability, and failure modes | [Question2/design.md](Question2/design.md) |
-
-## Quick Review Path
-
-If you want the fastest way to review the submission:
-
-1. Read [Question1/README.md](Question1/README.md) for the implementation choices and runnable commands.
-2. Review [Question2/architecture.png](Question2/architecture.png) for the production system overview.
-3. Read [Question2/design.md](Question2/design.md) for the system-design, evaluation, and observability reasoning.
 
 ## Solution Highlights
 
