@@ -1,58 +1,56 @@
-flowchart TB
+flowchart LR
     subgraph Channels
-        Web[Web / Mobile Chat]
-        SIP[SIP / Telephony]
+        Chat[Web / Mobile Chat]
+        Voice[SIP / Telephony]
     end
 
-    subgraph Voice Gateway
-        SBC[Session Border Controller or SIP Provider]
+    subgraph Voice_Path[Voice Runtime Path]
+        SBC[Session Border Controller / SIP Provider]
         Turn[Turn Detection / Barge-In Control]
         STT[Streaming STT]
         TTS[Text to Speech]
     end
 
-    subgraph App Tier
-        LB[Load Balancer]
+    subgraph Serving[Shared Orchestration Core]
         API[Channel API / Orchestrator]
+    end
+
+    subgraph State[State and Knowledge]
         Memory[(Redis Session Memory)]
-        Escalation[Human Escalation Service]
-    end
-
-    subgraph Knowledge Tier
-        Ingestion[Document Ingestion Pipeline]
-        Store[(Object Storage / Admin Uploads)]
-        Embed[Embedding Worker]
+        Alias[Versioned Serving Alias]
         Qdrant[(Qdrant)]
-        Alias[Versioned Collection Alias]
+        LLM[LLM Gateway / Model Provider]
+        SQL[(Postgres)]
     end
 
-    subgraph Intelligence
-        LLM[LLM Gateway / Model Provider]
+    subgraph Handoff[Handoff and Monitoring]
+        Escalation[Human Escalation Service]
+        Agents[Agent Desktop / CRM]
+        Obs[Langfuse + OpenTelemetry + Metrics]
+    end
+
+    subgraph Offline[Offline Update and Evaluation Loop]
+        Store[(Object Storage / Admin Uploads)]
+        Ingestion[Document Ingestion Pipeline]
+        Embed[Embedding Worker]
         Eval[Offline Eval Runner]
     end
 
-    subgraph Data and Ops
-        SQL[(Postgres)]
-        Obs[Langfuse + OpenTelemetry + Metrics]
-        Agents[Agent Desktop / CRM]
-    end
+    Chat --> API
+    Voice --> SBC --> Turn --> STT --> API
+    API --> TTS --> SBC
 
-    Web --> LB --> API
-    SIP --> SBC --> Turn --> STT --> API
-    API --> Memory
+    API <--> Memory
     API --> Alias --> Qdrant
     API --> LLM
-    API --> Escalation --> Agents
     API --> SQL
+
+    API --> Escalation --> Agents
     API --> Obs
     LLM --> Obs
     Qdrant --> Obs
-    TTS --> SBC
-    API --> TTS
-    API --> Turn
+    SQL --> Obs
 
-    Store --> Ingestion --> Embed --> Qdrant
-    Ingestion --> Alias
-    Store --> SQL
-    SQL --> Eval
-    Eval --> Obs
+    Store -.-> Ingestion --> Embed --> Qdrant
+    Ingestion -. validate and promote .-> Alias
+    SQL -. evaluation datasets .-> Eval --> Obs
