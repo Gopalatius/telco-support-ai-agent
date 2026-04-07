@@ -181,6 +181,7 @@ I would use a hybrid evaluation approach:
 - unsupported-query escalation recall at 100%
 - hallucination rate at or below 2%
 - p95 chat latency below 2.5 seconds
+- for voice, p95 time-to-first-audio should stay below 1.2 seconds and barge-in handling should succeed reliably enough that interrupted bot speech is cut off almost immediately in user testing
 
 ## In Production: Monitoring and Observability
 

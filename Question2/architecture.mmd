@@ -6,6 +6,7 @@ flowchart TB
 
     subgraph Voice Gateway
         SBC[Session Border Controller or SIP Provider]
+        Turn[Turn Detection / Barge-In Control]
         STT[Streaming STT]
         TTS[Text to Speech]
     end
@@ -37,7 +38,7 @@ flowchart TB
     end
 
     Web --> LB --> API
-    SIP --> SBC --> STT --> API
+    SIP --> SBC --> Turn --> STT --> API
     API --> Memory
     API --> Alias --> Qdrant
     API --> LLM
@@ -48,10 +49,10 @@ flowchart TB
     Qdrant --> Obs
     TTS --> SBC
     API --> TTS
+    API --> Turn
 
     Store --> Ingestion --> Embed --> Qdrant
     Ingestion --> Alias
     Store --> SQL
     SQL --> Eval
     Eval --> Obs
-
