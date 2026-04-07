@@ -1,0 +1,37 @@
+{
+  "cases": 28,
+  "results": [
+    {
+      "name": "dense",
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "avg_latency_ms": 582.09,
+      "search_units": 0,
+      "failures": []
+    },
+    {
+      "name": "hybrid_rrf",
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "avg_latency_ms": 565.58,
+      "search_units": 0,
+      "failures": []
+    },
+    {
+      "name": "dense_rerank",
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "avg_latency_ms": 983.5,
+      "search_units": 28,
+      "failures": []
+    },
+    {
+      "name": "hybrid_rrf_rerank",
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0,
+      "avg_latency_ms": 990.03,
+      "search_units": 28,
+      "failures": []
+    }
+  ]
+}

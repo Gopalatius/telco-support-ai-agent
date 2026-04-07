@@ -1,0 +1,53 @@
+[
+  {
+    "id": "chat_supported_01",
+    "message": "How much is the late payment fee?",
+    "history": [],
+    "expected_escalate": false,
+    "required_substrings": ["idr 50,000", "14 days overdue"]
+  },
+  {
+    "id": "chat_supported_02",
+    "message": "Which plan includes 5GB hotspot?",
+    "history": [],
+    "expected_escalate": false,
+    "required_substrings": ["pro plan", "5gb hotspot"]
+  },
+  {
+    "id": "chat_supported_03_multiturn",
+    "message": "Can I still dispute it?",
+    "history": [
+      {"role": "user", "content": "My invoice from two weeks ago looks wrong."},
+      {"role": "assistant", "content": "I can help with billing policy questions."}
+    ],
+    "expected_escalate": false,
+    "required_substrings": ["30 days", "invoice date"]
+  },
+  {
+    "id": "chat_supported_04_multiturn",
+    "message": "What was that number again?",
+    "history": [
+      {"role": "user", "content": "How do I report billing errors?"},
+      {"role": "assistant", "content": "You can submit a ticket via the app or call 123 free from any network."}
+    ],
+    "expected_escalate": false,
+    "required_substrings": ["123"]
+  },
+  {
+    "id": "chat_unsupported_01",
+    "message": "Do you support eSIM activation fees?",
+    "history": [],
+    "expected_escalate": true,
+    "required_substrings": ["escalating"]
+  },
+  {
+    "id": "chat_unsupported_02_multiturn",
+    "message": "What about international roaming bundles?",
+    "history": [
+      {"role": "user", "content": "Tell me about my plan."},
+      {"role": "assistant", "content": "I can answer questions about the listed service plans."}
+    ],
+    "expected_escalate": true,
+    "required_substrings": ["escalating"]
+  }
+]

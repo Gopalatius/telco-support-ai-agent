@@ -1,0 +1,14 @@
+{
+  "cases": 6,
+  "pass_rate": 1.0,
+  "avg_query_rewrite_ms": 1658.43,
+  "avg_embedding_ms": 592.63,
+  "avg_retrieval_ms": 4.54,
+  "avg_rerank_ms": 0.0,
+  "avg_generation_ms": 8747.35,
+  "avg_total_ms": 11003.0,
+  "avg_supported_total_ms": 15534.32,
+  "avg_unsupported_total_ms": 1940.35,
+  "search_units": 0,
+  "failures": []
+}

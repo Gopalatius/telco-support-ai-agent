@@ -1,0 +1,57 @@
+flowchart TB
+    subgraph Channels
+        Web[Web / Mobile Chat]
+        SIP[SIP / Telephony]
+    end
+
+    subgraph Voice Gateway
+        SBC[Session Border Controller or SIP Provider]
+        STT[Streaming STT]
+        TTS[Text to Speech]
+    end
+
+    subgraph App Tier
+        LB[Load Balancer]
+        API[Channel API / Orchestrator]
+        Memory[(Redis Session Memory)]
+        Escalation[Human Escalation Service]
+    end
+
+    subgraph Knowledge Tier
+        Ingestion[Document Ingestion Pipeline]
+        Store[(Object Storage / Admin Uploads)]
+        Embed[Embedding Worker]
+        Qdrant[(Qdrant)]
+        Alias[Versioned Collection Alias]
+    end
+
+    subgraph Intelligence
+        LLM[LLM Gateway / Model Provider]
+        Eval[Offline Eval Runner]
+    end
+
+    subgraph Data and Ops
+        SQL[(Postgres)]
+        Obs[Langfuse + OpenTelemetry + Metrics]
+        Agents[Agent Desktop / CRM]
+    end
+
+    Web --> LB --> API
+    SIP --> SBC --> STT --> API
+    API --> Memory
+    API --> Alias --> Qdrant
+    API --> LLM
+    API --> Escalation --> Agents
+    API --> SQL
+    API --> Obs
+    LLM --> Obs
+    Qdrant --> Obs
+    TTS --> SBC
+    API --> TTS
+
+    Store --> Ingestion --> Embed --> Qdrant
+    Ingestion --> Alias
+    Store --> SQL
+    SQL --> Eval
+    Eval --> Obs
+

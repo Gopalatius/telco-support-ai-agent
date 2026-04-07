@@ -1,0 +1,152 @@
+[project]
+name = "telco-assistant"
+version = "0.1.0"
+description = "Customer service AI agent for a telco support technical assignment."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "fastapi>=0.115.0,<1.0.0",
+  "google-genai>=1.10.0",
+  "granian>=1.4.1",
+  "openai>=1.75.0",
+  "pydantic-settings>=2.8.0",
+  "pydantic>=2.11.0",
+  "qdrant-client>=1.13.0",
+  "rank-bm25>=0.2.2",
+  "structlog>=25.2.0",
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.28.1",
+  "pytest-asyncio>=0.26.0",
+  "pytest-cov>=7.0.0",
+  "pytest>=8.3.5",
+  "ruff>=0.11.4",
+  "ty>=0.0.1a15",
+]
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/telco_agent"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+src = ["src", "tests", "scripts"]
+exclude = [".*"]
+
+[tool.ruff.format]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "B",
+  "UP",
+  "SIM",
+  "PERF",
+  "FURB",
+  "RET",
+  "RUF",
+  "TC",
+]
+ignore = [
+  "W191",
+  "E111",
+  "E114",
+  "E117",
+  "D206",
+  "D300",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "COM812",
+  "COM819",
+  "ISC001",
+  "ISC002",
+  "E501",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D107",
+  "D205",
+  "D203",
+  "D213",
+  "D401",
+  "DOC201",
+  "DOC501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = [
+  "S101",
+  "S106",
+  "ANN001",
+  "ANN002",
+  "ANN003",
+  "ANN201",
+  "ANN202",
+  "ANN204",
+  "ANN401",
+  "ARG001",
+  "ARG002",
+  "ARG005",
+  "FBT002",
+  "FBT003",
+  "INP001",
+  "N801",
+  "N803",
+  "N818",
+  "PLC0415",
+  "PLC1901",
+  "PLR0913",
+  "PLR0917",
+  "PLR2004",
+  "PLR6301",
+  "PT011",
+  "RUF012",
+  "RUF029",
+  "S105",
+  "SLF001",
+]
+"scripts/**/*" = [
+  "BLE001",
+  "ERA001",
+  "INP001",
+  "N806",
+  "PTH118",
+  "PTH208",
+  "T201",
+  "S110",
+  "TRY203",
+  "TRY300",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ty.src]
+include = ["src"]
+exclude = [".*"]
+
+[tool.ty.environment]
+python-version = "3.13"
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.ty.rules]
+possibly-unresolved-reference = "error"
+possibly-missing-import = "error"
+possibly-missing-attribute = "error"
+deprecated = "error"

@@ -1,0 +1,21 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.qdrant/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.pyc
+*.pyo
+*.pyd
+dist/
+build/
+.DS_Store
+.python-version
+AI Engineer - Technical Assignment.md
