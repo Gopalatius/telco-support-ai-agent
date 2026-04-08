@@ -249,16 +249,4 @@ Response plan:
 - pause further promotions from the ingestion pipeline until validation is fixed
 - re-run ingestion validation before promoting a new collection again
 
-### Scenario 3: Voice quality degrades under peak load
-
-Response plan:
-
-- check stage-level latency first to determine whether the regression is in STT, LLM inference, TTS, telephony transport, or turn-detection timing
-- reduce user-visible damage quickly by tightening timeouts, shortening prompts if needed, and increasing escalation when voice latency crosses the release threshold
-- inspect concurrency, queue depth, and per-stage p95 latency to see whether the system is compute-bound, provider-bound, or network-bound
-- if the bottleneck is model latency, fail over to a faster voice-safe model or smaller prompt profile for voice sessions
-- if the bottleneck is retrieval or session-state contention, scale the stateless serving tier horizontally and inspect Redis/Qdrant pressure separately
-- if the issue is specific to voice transport, work with the telephony provider or SBC layer instead of treating it as a model problem
-- validate recovery by checking p95 time-to-first-audio and barge-in responsiveness before declaring the incident resolved
-
 This is why the index should be versioned and promoted via alias instead of overwritten in place.
