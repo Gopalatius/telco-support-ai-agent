@@ -70,9 +70,8 @@ def test_embed_query_and_documents_return_vectors(monkeypatch) -> None:
     ) == [[1.0, 0.0], [0.0, 1.0]]
     assert len(models.calls) == 3
     assert models.calls[0]["model"] == "gemini-embedding-2-preview"
-    assert models.calls[0]["config"].task_type == "RETRIEVAL_QUERY"
-    assert models.calls[1]["config"].task_type == "RETRIEVAL_DOCUMENT"
-    assert models.calls[1]["config"].title == "Title"
+    assert models.calls[0]["config"].output_dimensionality == 3072
+    assert models.calls[1]["config"].output_dimensionality == 3072
 
 
 def test_embed_query_raises_for_missing_payload(monkeypatch) -> None:

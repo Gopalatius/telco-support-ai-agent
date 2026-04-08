@@ -56,11 +56,17 @@ def test_health_endpoint_returns_503_when_dependency_raises(monkeypatch) -> None
 
 
 def test_lifespan_configures_logging(monkeypatch) -> None:
+    class StubStore:
+        def healthcheck(self) -> bool:
+            return True
+
     calls: list[str] = []
     monkeypatch.setattr(
         "telco_agent.api.main.configure_logging",
         lambda: calls.append("configured"),
     )
+    monkeypatch.setattr(health_module, "get_settings", lambda: object())
+    monkeypatch.setattr(health_module, "get_vector_store", lambda: StubStore())
 
     with TestClient(app) as client:
         response = client.get("/health")

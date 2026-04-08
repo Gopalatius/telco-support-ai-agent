@@ -282,11 +282,17 @@ Where the data did not justify extra complexity, I explicitly kept the simpler p
 
 I chose `gemini-embedding-2-preview` directly from Google because the model family is explicitly positioned as a high-quality retrieval embedding model and Google publishes strong benchmark results for Gemini Embedding 2 across multilingual and retrieval-heavy tasks. That matters more to me here than having the cheapest possible embedding model, because retrieval quality is the main quality bottleneck in a small RAG system.
 
-In the implementation, I also use Gemini's retrieval-specific task types so queries and documents are embedded with the right retrieval intent:
+Google's published benchmark comparison also helped inform that choice. The chart below is not evidence that Gemini Embedding 2 is universally best on every task, but it is strong support that the model is highly competitive across multilingual, code, text-image, and speech-text embedding workloads, which made it a credible default for a retrieval-heavy assignment.
 
-- query embeddings use `RETRIEVAL_QUERY`
-- document embeddings use `RETRIEVAL_DOCUMENT`
-- document titles are passed separately as additional document context
+![Gemini Embedding 2 benchmark comparison](https://storage.googleapis.com/gweb-uniblog-publish-prod/documents/gemini-embedding-2-benchmarks.png)
+
+Source: Google's Gemini Embedding 2 benchmark summary
+
+For Embeddings 2 specifically, Google recommends encoding retrieval intent in the input text rather than using the older `task_type` API field from `gemini-embedding-001`. So the implementation follows the Embeddings 2 asymmetric retrieval format directly:
+
+- queries are formatted like `task: question answering | query: ...`
+- documents are formatted like `title: ... | text: ...`
+- the SDK config is only used for `output_dimensionality`, not for retrieval task selection
 
 That is what "asymmetric retrieval" means here: the user query and the stored document chunk do not play the same role, so I do not ask the embedding model to treat them identically. The query encoder is optimized for search intent, while the document encoder is optimized for searchable knowledge chunks.
 

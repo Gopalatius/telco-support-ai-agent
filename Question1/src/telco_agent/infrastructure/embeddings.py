@@ -16,10 +16,7 @@ class GeminiEmbeddingClient:
         response = self._client.models.embed_content(
             model=self._settings.embedding_model,
             contents=text,
-            config=types.EmbedContentConfig(
-                task_type="RETRIEVAL_QUERY",
-                output_dimensionality=3072,
-            ),
+            config=types.EmbedContentConfig(output_dimensionality=3072),
         )
         embeddings = cast("list[object]", response.embeddings or [])
         if not embeddings:
@@ -35,11 +32,7 @@ class GeminiEmbeddingClient:
             response = self._client.models.embed_content(
                 model=self._settings.embedding_model,
                 contents=chunk.embedding_text,
-                config=types.EmbedContentConfig(
-                    task_type="RETRIEVAL_DOCUMENT",
-                    title=chunk.title,
-                    output_dimensionality=3072,
-                ),
+                config=types.EmbedContentConfig(output_dimensionality=3072),
             )
             embeddings = cast("list[object]", response.embeddings or [])
             if len(embeddings) != 1:
