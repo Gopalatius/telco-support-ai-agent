@@ -218,24 +218,47 @@ If answer quality drops suddenly, I would:
 
 ## Failure Mode Analysis
 
+My default production posture is to treat these issues as incident-response problems, not just model-quality problems. For each major failure mode, I would follow the same sequence:
+
+1. contain user risk first
+2. identify the failing layer with traces and metrics
+3. roll back the smallest possible surface area
+4. validate on a targeted offline slice before restoring normal autonomy
+
 ### Scenario 1: The LLM starts hallucinating billing policies
 
 Response plan:
 
-- immediately lower the allowed confidence threshold for autonomous answers
-- increase escalation behavior for billing intents
-- compare prompt and model versions against the last known good release
-- inspect traces to confirm whether the issue is generation drift or bad retrieval context
-- if needed, roll back the prompt or model configuration
-- run the billing-focused offline eval suite before re-enabling the previous autonomy level
+- immediately move billing intents into a safer operating mode by increasing escalation behavior and reducing the range of questions the assistant can answer autonomously
+- inspect recent Langfuse traces to separate three possibilities: prompt drift, model drift, or retrieval supplying weak evidence
+- compare the active prompt, model, and provider configuration against the last known good release
+- sample the failing traces and verify whether the retrieved chunks actually support the answer text
+- if the problem is generation drift, roll back the prompt or model configuration first rather than touching the retrieval layer
+- if customer risk is material, temporarily force all billing-policy questions to escalate until the issue is contained
+- run the billing-focused offline eval suite before restoring the previous answer autonomy
+- keep an audit record of the incident window so support and operations teams can review affected conversations if needed
 
 ### Scenario 2: A knowledge-base update causes irrelevant retrieval
 
 Response plan:
 
-- rollback the serving alias to the previous Qdrant collection
-- compare document counts, chunk counts, metadata coverage, and embedding job logs
-- inspect top-score distributions and retrieval hit rates on the validation set
+- roll back the serving alias to the previous Qdrant collection immediately so the live system returns to the last known good index
+- compare document counts, chunk counts, metadata coverage, and embedding job logs between the bad and good index versions
+- inspect top-score distributions, empty-hit rate, and validation-set retrieval hit rates to identify whether the regression came from chunking, metadata loss, or embedding quality
+- confirm whether the issue is corpus-related or query-side by replaying a small set of failing production traces against both index versions
+- pause further promotions from the ingestion pipeline until validation is fixed
 - re-run ingestion validation before promoting a new collection again
+
+### Scenario 3: Voice quality degrades under peak load
+
+Response plan:
+
+- check stage-level latency first to determine whether the regression is in STT, LLM inference, TTS, telephony transport, or turn-detection timing
+- reduce user-visible damage quickly by tightening timeouts, shortening prompts if needed, and increasing escalation when voice latency crosses the release threshold
+- inspect concurrency, queue depth, and per-stage p95 latency to see whether the system is compute-bound, provider-bound, or network-bound
+- if the bottleneck is model latency, fail over to a faster voice-safe model or smaller prompt profile for voice sessions
+- if the bottleneck is retrieval or session-state contention, scale the stateless serving tier horizontally and inspect Redis/Qdrant pressure separately
+- if the issue is specific to voice transport, work with the telephony provider or SBC layer instead of treating it as a model problem
+- validate recovery by checking p95 time-to-first-audio and barge-in responsiveness before declaring the incident resolved
 
 This is why the index should be versioned and promoted via alias instead of overwritten in place.
